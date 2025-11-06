@@ -24,8 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'publisher_node = vision_rpi.publisher:main',
-            'subscriber_node = vision_rpi.subscriber:main',
+            'publisher_rpi_node = vision_rpi.publisher:main',
+            'subscriber_rpi_node = vision_rpi.subscriber:main',
         ],
     },
 )
