@@ -16,7 +16,7 @@ STOP = 0
 class UltrasonicNode(Node):
     def __init__(self, chip):
         super().__init__("ultrasonic_node")
-        self.publisher_ = self.create_publisher(Int16, "controls/motor", 10)
+        self.publisher_ = self.create_publisher(Int16, "controls/l298n", 10)
         self.timer = self.create_timer(TIMER_PERIOD, self.detect_obstacle)
         self.get_logger().info("Ultrasonic sensor initialized")
         self.chip = chip
@@ -63,6 +63,8 @@ def main(args=None):
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.get_logger().info("Ultrasonic sensor stopped")
+        lgpio.gpio_write(chip, TRIG_PIN, 0)
+        lgpio.gpio_write(chip, ECHO_PIN, 0)
 
     # Cleanup
     node.destroy_node()
