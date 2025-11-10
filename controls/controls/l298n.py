@@ -1,29 +1,35 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int16
+from std_msgs.msg import Bool
 import lgpio
 import time
 
 # Constants
+US_TOPIC = "/ultrasonic_obstacle_detection"
 MIN_PWM_DUTY_CYCLE = 30  # %
 MAX_PWM_DUTY_CYCLE = 100 # %
-TIMER_PERIOD = 0.1       # seconds
 PWM = 1000               #kHz
 
 ENA_PIN = 18 # BCM pin number
 IN1_PIN = 15 # BCM pin number
 IN2_PIN = 14 # BCM pin number
-IN3_PIN = 2 # BCM pin number
-IN4_PIN = 3 # BCM pin number
-ENB_PIN = 4 # BCM pin number
+IN3_PIN = 2  # BCM pin number
+IN4_PIN = 3  # BCM pin number
+ENB_PIN = 4  # BCM pin number
 
 class L298nNode(Node):
 
     def __init__(self, chip):
         super().__init__("l298n_node")
-        self.subscriber = self.create_subscription(Int16, "controls/l298n", self.control_motors, 10)
+        self.subscriber = self.create_subscription(Bool, US_TOPIC, self.update_flag, 10)
+        self.is_obstacle = True
+
         self.get_logger().info("L298n motor module initialized")
         self.chip = chip
+
+    def update_flag(self, msg):
+        self.is_obstacle = msg.data
+        self.get_logger().info(f"is_obstacle updated: {self.is_obstacle}")
 
     def control_motors(self, msg):
         self.get_logger().info(f"L298n motor module has message {msg}")
@@ -68,6 +74,15 @@ class L298nNode(Node):
         lgpio.tx_pwm(self.chip, ENB_PIN, PWM, 0)
 
     def destroy_node(self):
+        # Stop l298n module
+        self.get_logger().info("L298n motor module stopped")
+        lgpio.gpio_write(self.chip, ENA_PIN, 0)
+        lgpio.gpio_write(self.chip, IN1_PIN, 0)
+        lgpio.gpio_write(self.chip, IN2_PIN, 0)
+        lgpio.gpio_write(self.chip, IN3_PIN, 0)
+        lgpio.gpio_write(self.chip, IN4_PIN, 0)
+        lgpio.gpio_write(self.chip, ENB_PIN, 0)
+
         super().destroy_node()
 
 
@@ -92,19 +107,10 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("L298n motor module stopped")
-        lgpio.gpio_write(chip, ENA_PIN, 0)
-        lgpio.gpio_write(chip, IN1_PIN, 0)
-        lgpio.gpio_write(chip, IN2_PIN, 0)
-        lgpio.gpio_write(chip, IN3_PIN, 0)
-        lgpio.gpio_write(chip, IN4_PIN, 0)
-        lgpio.gpio_write(chip, ENB_PIN, 0)
-
-    # Cleanup
-    node.destroy_node()
-    lgpio.gpiochip_close(chip)
-    rclpy.shutdown()
-
+        # Cleanup
+        node.destroy_node()
+        lgpio.gpiochip_close(chip)
+        rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
