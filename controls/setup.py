@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'vision_rpi'
+package_name = 'controls'
 
 setup(
     name=package_name,
@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='michael',
-    maintainer_email='mike303.py@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='pi',
+    maintainer_email='mz316412@student.polsl.pl',
+    description='Controls package is responsible for control of GPIOs (motor control, ultrasonic sensor etc.)',
+    license='MIT License',
     extras_require={
         'test': [
             'pytest',
@@ -24,8 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'publisher_node = vision_rpi.publisher:main',
-            'subscriber_node = vision_rpi.subscriber:main',
+            'ultrasonic_obstacle_detection = controls.ultrasonic:main',
+            'motor_controls = controls.l298n:main',
         ],
     },
 )
