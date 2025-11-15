@@ -24,7 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'hough_algorithm = vision.hough:main',
+            'line_camera = vision.camera:main',
+            'pid_controller = vision.pid_control:main',
         ],
     },
 )

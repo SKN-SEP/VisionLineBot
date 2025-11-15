@@ -1,42 +1,45 @@
 # Libraries
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Int16
-import numpy as np
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 import cv2 as cv
 import uuid
 import os
 
 # Constants
-CAMERA_ID = 0
-TIMER_DURATION_S = 2.5
-SPEED_TOPIC = "/cv_speed"
-MOVE_TOPIC = "/cv_move"
+TIMER_DURATION_S =  0.1
+LINE_CAMERA_ID = 0
+LINE_TOPIC = "/camera/line_images"
 IMG_DIR = "/home/pi/VisionLineBotSrc/VisionLineBot/vision/images"
+IMG_ENCODING = "bgr8"
 
-class HoughLineFollowerAlgorithm(Node):
+class LineCameraNode(Node):
 
     def __init__(self):
-        super().__init__("hough_node")
+        super().__init__("camera_node")
 
         # Initialize ROS2
-        self.__speed_publisher = self.create_publisher(Int16, SPEED_TOPIC, 10)
-        self.__move_publisher = self.create_publisher(Int16, MOVE_TOPIC, 10)
-        self.__timer = self.create_timer(TIMER_DURATION_S, self.followLine)
+        self.__publisher = self.create_publisher(Image, LINE_TOPIC, 10)
+        self.__timer = self.create_timer(TIMER_DURATION_S, self.captureFrame)
+        self.__bridge = CvBridge()
 
         # Initialize OpenCV
-        self.__camera = cv.VideoCapture(CAMERA_ID)
+        self.__camera = cv.VideoCapture(LINE_CAMERA_ID)
         self.__frame = None
         self.__ret = None 
         assert self.__camera != None 
+        self.get_logger().info("Camera has been initialized")
     
     def captureFrame(self):
         # Take picture
         self.__ret, self.__frame = self.__camera.read()
 
-        # Perform image processing
+        # Upload image to the topic
         if self.__ret:
-            pass
+            img = self.__bridge.cv2_to_imgmsg(self.__frame, IMG_ENCODING)
+            self.__publisher.publish(img)
+            self.get_logger().info(f"Image published to the topic: {LINE_TOPIC}")
     
     def saveFrame(self):
         # Generate file name
@@ -50,22 +53,16 @@ class HoughLineFollowerAlgorithm(Node):
             
             cv.imwrite(filename, self.__frame)
 
-    def followLine(self):
-        # Capture and save image
-        self.captureFrame()
-        self.saveFrame()
-
-        # TO BE CONTINUED
-
     def destroy_node(self):
         self.__camera.release()
+        self.get_logger().info("Camera has stopped")
         super().destroy_node()
 
 # Entry point
 def main(args=None):
     # ROS2 setup
     rclpy.init(args=args)
-    node = HoughLineFollowerAlgorithm()
+    node = LineCameraNode()
 
     try:
         rclpy.spin(node)
