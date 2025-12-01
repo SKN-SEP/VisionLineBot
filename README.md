@@ -23,7 +23,7 @@ Line follower is an autonomous robot, that tracks the black line. Robot works th
 3. Connect your arduino to computer and upload the program.
 
 ## Assembly 
-In order to build this robot, you need all the parts listed in the table below. The corresponding STL models are in the assets folder. The skills required to assemble this robot include 3D printing, soldering, and cable management.
+In order to build this robot, you need all the parts listed in the table below. The corresponding STL models are in the models folder. The skills required to assemble this robot include 3D printing, soldering, and cable management.
 | Name                 | Description                                                                 | Image                                   |
 |----------------------|-----------------------------------------------------------------------------|-----------------------------------------|
 | Arduino Uno          | Microcontroller board for controlling sensors and motors                    | ![Arduino Uno](./assets/arduino-uno.jpg) |
