@@ -19,14 +19,15 @@ This project implements PD regulator in velocity form, it is widely used in mobi
 - *D* - the derivative term, it tells how quickly the error is changing. It reacts to the speed of movement away from or toward the line. Tuning this parameter helps us to reduce oscillation and smooths turns. Overally slows down the robot to avoid overshooting.
 
 The general equation form:
-$$  
+```math
 u(t) = K_P e(t) + K_D\frac{d e(t)}{dt}
-$$
+```
 
 The discrete equation form:
-$$
+
+```math
 u(t) = K_P e(t) + K_D(e(t) - e(t-1))
-$$
+```
 
 - $u(t)$ - current velocity, in other words duty cycle of the motors.
 - $K_P$ - propotional term, tells how strong react to turns.
