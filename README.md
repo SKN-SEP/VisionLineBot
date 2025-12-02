@@ -3,13 +3,15 @@ Line follower is an autonomous robot, that tracks the black line. Robot works th
 
 ### Table of contents 
 - [Introduction](#introduction)
-- [PD Algorithm](#pid-algorithm)
+- [PD Algorithm](#pd-algorithm)
 - [Installation](#installation)
 - [Assembly](#assembly)
 - [License](#license)
 
 ## Introduction
 Stable and fast line follower is a great robot that helps us understand the role of the theory contorl in modern autonomous vehicles. The same algorithm can be implemented in camera based line follower or cars that drive between the lines. Knowledge gained by completing this project will help to create more advanced driving systems in the future.
+
+<img src="./assets/robot.gif"/>
 
 ## PD Algorithm 
 This project implements PD regulator in velocity form, it is widely used in mobile robots. We have implemented the discrete form of the PD reulator's equation. 
